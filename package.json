@@ -9,7 +9,7 @@
     "node": ">=20.12.2 <21"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs",
+    "test": "node --test",
     "check:structure": "node scripts/check-structure.mjs",
     "check": "npm run check:structure && npm test",
     "audit": "npm audit --audit-level=high"

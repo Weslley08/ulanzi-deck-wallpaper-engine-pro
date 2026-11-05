@@ -4,11 +4,13 @@
   opacity: 0.8;
 }
 
-.tip.error {
-  color: #d9534f;
+.retry {
+  margin-top: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
 }
 
-.version {
-  opacity: 0.6;
-  font-size: 11px;
+.retry:disabled {
+  opacity: 0.5;
+  cursor: default;
 }

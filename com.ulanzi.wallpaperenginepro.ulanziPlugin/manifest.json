@@ -2,7 +2,7 @@
   "Author": "Weslley08",
   "Name": "Wallpaper Engine PRO",
   "Description": "Shows the wallpaper playing on your primary monitor in Wallpaper Engine, on a Ulanzi key.",
-  "Detail": "Wallpaper Engine PRO reads the current wallpaper of the primary monitor from Wallpaper Engine and shows its name on a key. Press the key to refresh it. Setup: open the inspector and enter the full path to wallpaper64.exe in your Wallpaper Engine folder. Wallpaper Engine must be running. This version shows the name only, not a preview image.",
+  "Detail": "Wallpaper Engine PRO reads the current wallpaper of the primary monitor from Wallpaper Engine and shows its name on a key. Press the key to refresh it. There is nothing to set up: while Wallpaper Engine is running, the plugin finds it by itself, in any Steam library or drive. If it is not running, the key says so, and pressing it looks again. This version shows the name only, not a preview image.",
   "Icon": "resources/plugin-icon.png",
   "Version": "0.1.0",
   "Category": "Wallpaper Engine PRO",

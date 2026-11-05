@@ -49,14 +49,19 @@ test('every local script and stylesheet in the inspector resolves inside the plu
   }
 });
 
-test('inspector shows its configuration form without waiting for a websocket event', () => {
+test('auto-discovery inspector is visible and never asks for a manual executable path', () => {
   const page = join(pluginRoot, manifest.Actions[0].PropertyInspectorPath);
   const html = readFileSync(page, 'utf8');
-  // A previous version hid the whole form, but its script never removed the hidden class.
-  // Keep the input visible even if Studio is still establishing the websocket connection.
+  const script = readFileSync(join(dirname(page), 'inspector.js'), 'utf8');
+
+  // Keep the status and retry button visible even before Studio establishes its WebSocket.
   assert.match(html, /<div class="uspi-wrapper">/);
-  assert.match(html, /<input[^>]*id="executablePath"[^>]*>/);
   assert.doesNotMatch(html, /<div class="uspi-wrapper hidden">/);
+  assert.match(html, /id="status"/);
+  assert.match(html, /<button[^>]*id="retry"/);
+  // Product requirement: finding wallpaper64.exe / wallpaper32.exe is fully automatic.
+  assert.doesNotMatch(html, /id="executablePath"/);
+  assert.doesNotMatch(script, /getElementById\(['"]executablePath['"]\)|querySelector\(['"]#executablePath['"]\)/);
 });
 
 

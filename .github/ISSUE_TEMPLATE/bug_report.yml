@@ -56,8 +56,8 @@ body:
     attributes:
       label: Steps to reproduce
       placeholder: |
-        1. Put the action on a key
-        2. Enter the path to wallpaper64.exe
+        1. Start Wallpaper Engine
+        2. Put the action on a key
         3. Press ...
     validations:
       required: true

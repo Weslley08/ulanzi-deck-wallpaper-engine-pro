@@ -17,7 +17,7 @@ assert.equal(pkg.engines.node, '>=20.12.2 <21');
 const pluginRoot = 'com.ulanzi.wallpaperenginepro.ulanziPlugin';
 for (const file of [
   'manifest.json', 'package.json', 'plugin/app.js', 'plugin/controller.js', 'plugin/host.js',
-  'plugin/settings.js', 'plugin/wallpaper-engine-cli.js', 'plugin/ulanzi-api/index.js', 'libs/js/ulanziApi.js',
+  'plugin/wallpaper-engine-discovery.js', 'plugin/wallpaper-engine-cli.js', 'plugin/ulanzi-api/index.js', 'libs/js/ulanziApi.js',
   'property-inspector/current-wallpaper/inspector.html',
 ]) {
   assert.ok(existsSync(join(pluginRoot, file)), `Missing ${file}`);

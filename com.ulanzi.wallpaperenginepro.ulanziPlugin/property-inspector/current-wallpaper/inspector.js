@@ -1,14 +1,9 @@
-// Property Inspector: saves the Wallpaper Engine path through the plugin, which validates it.
-// The SDK logs every message, and messages carry the path, so nothing is written to the console.
+// Property Inspector: shows what the plugin detected and offers to look again. It sends no path and saves nothing.
+// The SDK logs every message, so nothing is written to the console.
 for (const method of ['log', 'info', 'debug', 'warn', 'error']) console[method] = () => {};
 
-const input = document.querySelector('#executablePath');
 const statusLine = document.querySelector('#status');
-
-function showStatus(text, ok) {
-  statusLine.textContent = text;
-  statusLine.classList.toggle('error', ok === false);
-}
+const retryButton = document.querySelector('#retry');
 
 $UD.connect();
 
@@ -18,15 +13,13 @@ $UD.onConnected(() => {
 
 $UD.onSendToPropertyInspector((jsn) => {
   const message = jsn.payload;
-  if (message?.type === 'settings') {
-    input.value = message.executablePath ?? '';
-    if (!message.executablePath) showStatus('Enter the full path to wallpaper64.exe, then press Enter.');
-  } else if (message?.type === 'status') {
-    showStatus(message.message, message.ok);
-  }
+  if (message?.type !== 'status') return;
+  statusLine.textContent = message.message;
+  retryButton.disabled = false;
 });
 
-// change fires on Enter or when the field loses focus, so a path is not sent letter by letter.
-input.addEventListener('change', () => {
-  $UD.sendToPlugin({ type: 'save', executablePath: input.value });
+retryButton.addEventListener('click', () => {
+  retryButton.disabled = true;
+  statusLine.textContent = 'Detectando o Wallpaper Engine…';
+  $UD.sendToPlugin({ type: 'retry' });
 });

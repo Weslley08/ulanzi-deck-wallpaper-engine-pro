@@ -2,6 +2,7 @@
   "Name": "Wallpaper Engine PRO",
   "Description": "Shows the wallpaper playing on your primary monitor in Wallpaper Engine, on a Ulanzi key.",
   "Actions": [
-    { "Name": "Current Wallpaper", "Tooltip": "Show the wallpaper playing on the primary monitor. Press to refresh." }
+    { "Name": "Current Wallpaper", "Tooltip": "Show the wallpaper playing on the primary monitor. Press to refresh." },
+    { "Name": "Wallpaper Command", "Tooltip": "Run a Wallpaper Engine command: next, pause, play, mute, unmute, a playlist or a profile." }
   ]
 }

@@ -30,11 +30,34 @@ There is nothing to configure. Put the **Current Wallpaper** action on a key whi
 
 | The key says | Meaning | What to do |
 |---|---|---|
-| `Wallpaper Engine não está em execução` | No `wallpaper64.exe` or `wallpaper32.exe` is running | Start Wallpaper Engine, then press the key |
-| `Não foi possível detectar o Wallpaper Engine` | It may be running, but its location could not be confirmed: for example two installations at once, or it runs as administrator | Press the key, or **Detectar novamente** in the key's settings |
-| `Não foi possível ler o wallpaper` | It was found, but did not answer `getWallpaper` | Press the key again |
+| the wallpaper's name | Found and answered | — |
+| `WE fechado` | No `wallpaper64.exe` or `wallpaper32.exe` is running | Start Wallpaper Engine, then press the key |
+| `WE não detectado` | It may be running, but its location could not be confirmed: for example two installations at once, or it runs as administrator | Press the key, or **Detectar novamente** in the key's settings |
+| `WE ativo` | Found and running, but `getWallpaper` printed nothing | The commands still work. See the limitation below |
+| `WE sem resposta` | Found, but `getWallpaper` failed or timed out | Press the key again |
 
-How it finds the program: Windows lists running processes with their executable path in the documented `Win32_Process` class, which the plugin reads through the system's own PowerShell (`Get-CimInstance`), with a fixed command and no shell. It looks only when the key is added, pressed or shown again, never in the background, and it never starts Wallpaper Engine. It then runs only `-control getWallpaper`, and never writes your folders to its logs.
+The settings panel shows the full sentence for each state.
+
+How it finds the program: Windows lists running processes with their executable path in the documented `Win32_Process` class, which the plugin reads through the system's own PowerShell (`Get-CimInstance`), with a fixed command and no shell. It looks only when a key is added, pressed or shown again, never in the background, and it never starts Wallpaper Engine. Your folders never go to its logs, and a failure repeated on every press is logged once a minute with a count.
+
+### Wallpaper Command keys
+
+Put **Wallpaper Command** on as many keys as you like, such as the six of a D200, and choose in each key's settings what it does. Each key keeps its own choice after Studio restarts.
+
+| Action | Wallpaper Engine command | Monitor |
+|---|---|---|
+| Próximo wallpaper | `nextWallpaper` | Empty changes **all** monitors; a number changes that one |
+| Pausar / Reproduzir | `pause` / `play` | All wallpapers |
+| Mutar / Desmutar | `mute` / `unmute` | All wallpapers |
+| Abrir playlist pelo nome | `openPlaylist -playlist <name>` | Empty opens on the **first** monitor; a number picks another |
+| Abrir perfil pelo nome | `openProfile -profile <name>` | — |
+
+Monitor numbers are Wallpaper Engine's own: 0 is its first monitor, which is not necessarily the Windows primary display. If Wallpaper Engine is not running, or the command fails, the key flashes an alert and nothing is started.
+
+### Limitations
+
+- **`getWallpaper` may print nothing.** On the device it was seen to run and return no output, so the key shows `WE ativo` instead of a name. The documentation says it writes to standard output, and no documented way to capture it otherwise was found, so this stays a fallback rather than a workaround.
+- **No favorite wallpapers.** Wallpaper Engine documents no command to list installed or favorite wallpapers. Picking them would mean reading Steam or Wallpaper Engine folders, which is neither documented nor public, so it is not done. `openWallpaper` needs a file path, which this plugin never asks for.
 
 ## Development
 

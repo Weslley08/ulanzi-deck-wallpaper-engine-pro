@@ -1,16 +1,80 @@
-/* Only what the shared uspi.css does not already provide. */
-.hint {
-  margin: 6px 0 0;
-  opacity: 0.8;
+/* One vertical column that wraps instead of overlapping, for Studio's narrow panel. Shared by both inspectors. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.panel-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status,
+.hint,
+.field-note {
+  margin: 0;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: rgba(127, 184, 255, 0.12);
+}
+
+.status[data-state="notRunning"],
+.status[data-state="undetected"],
+.status[data-state="queryFailed"] {
+  background: rgba(217, 83, 79, 0.15);
+}
+
+.status[data-state="detected"] {
+  background: rgba(240, 173, 78, 0.15);
+}
+
+.hint,
+.field-note {
+  font-size: 11px;
+  opacity: 0.75;
 }
 
 .retry {
-  margin-top: 6px;
-  padding: 4px 10px;
+  align-self: flex-start;
+  min-height: 28px;
+  padding: 4px 12px;
   cursor: pointer;
 }
 
 .retry:disabled {
-  opacity: 0.5;
-  cursor: default;
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 12px;
+}
+
+.field select,
+.field input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 26px;
+}
+
+.hidden-field {
+  display: none;
 }

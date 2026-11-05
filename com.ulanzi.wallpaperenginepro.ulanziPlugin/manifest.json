@@ -26,6 +26,21 @@
       "SupportedInMultiActions": false,
       "Controllers": ["Keypad"],
       "Devices": []
+    },
+    {
+      "Name": "Wallpaper Command",
+      "Icon": "resources/action.svg",
+      "UUID": "com.ulanzi.wallpaperenginepro.ulanziPlugin.command",
+      "PropertyInspectorPath": "property-inspector/command/inspector.html",
+      "Tooltip": "Run a Wallpaper Engine command: next, pause, play, mute, unmute, a playlist or a profile.",
+      "state": 0,
+      "States": [
+        { "Name": "Wallpaper Command", "Image": "resources/command-default.png" }
+      ],
+      "DisableAutomaticStates": true,
+      "SupportedInMultiActions": false,
+      "Controllers": ["Keypad"],
+      "Devices": []
     }
   ],
   "OS": [

@@ -128,9 +128,13 @@ async function smokeTest() {
             // The first key carries a path saved by an older build, which must be ignored.
             socket.send(JSON.stringify({ cmd: 'add', uuid: action, key: '0_0', actionid: 'smoke-1', param: { executablePath: OLD_SAVED_PATH } }));
             socket.send(JSON.stringify({ cmd: 'add', uuid: action, key: '1_0', actionid: 'smoke-2', param: {} }));
+            // A command key must draw its packaged icon. Adding it runs nothing.
+            socket.send(JSON.stringify({ cmd: 'add', uuid: manifest.Actions[1].UUID, key: '2_0', actionid: 'smoke-3', param: { command: 'pause' } }));
           }
           if (message.cmd === 'setTitle') titles.add(`${message.param?.key}:${message.param?.text}`);
-          if (titles.has('0_0:Sunset') && titles.has('1_0:Sunset')) {
+          const face = message.cmd === 'state' ? message.param?.statelist?.[0] : null;
+          if (face?.key === '2_0' && face.data?.startsWith('data:image/png;base64,') && face.data.length > 200) titles.add('2_0:icon');
+          if (titles.has('0_0:Sunset') && titles.has('1_0:Sunset') && titles.has('2_0:icon')) {
             clearTimeout(limit);
             resolve(undefined);
           }

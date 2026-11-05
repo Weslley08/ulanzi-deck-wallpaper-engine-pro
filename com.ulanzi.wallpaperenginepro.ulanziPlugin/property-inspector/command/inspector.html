@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Wallpaper Engine PRO</title>
+  <link rel="stylesheet" href="../../libs/css/uspi.css">
+  <link rel="stylesheet" href="../current-wallpaper/inspector.css">
+</head>
+<body>
+  <div class="uspi-wrapper">
+    <!-- Each key keeps its own command. Wallpaper Engine is found by itself: there is no path here. -->
+    <form class="panel" id="command-form" autocomplete="off">
+      <h2 class="panel-title">Comando do Wallpaper Engine</h2>
+
+      <div class="field">
+        <label for="command">Ação</label>
+        <select id="command" name="command">
+          <option value="next">Próximo wallpaper</option>
+          <option value="pause">Pausar wallpapers</option>
+          <option value="play">Reproduzir wallpapers</option>
+          <option value="mute">Mutar wallpapers</option>
+          <option value="unmute">Desmutar wallpapers</option>
+          <option value="playlist">Abrir playlist pelo nome</option>
+          <option value="profile">Abrir perfil pelo nome</option>
+        </select>
+      </div>
+
+      <div class="field hidden-field" id="name-field">
+        <label for="name" id="name-label">Nome</label>
+        <input id="name" name="name" type="text" maxlength="64" spellcheck="false">
+        <p class="field-note">O nome exato da playlist ou do perfil já criado no Wallpaper Engine.</p>
+      </div>
+
+      <div class="field hidden-field" id="monitor-field">
+        <label for="monitor">Monitor (opcional)</label>
+        <input id="monitor" name="monitor" type="number" min="0" max="31" step="1" placeholder="Padrão">
+        <p class="field-note" id="monitor-note"></p>
+      </div>
+
+      <p class="hint">Sem execução: a tecla pisca um alerta e nada é iniciado.</p>
+    </form>
+  </div>
+
+  <script src="../../libs/js/constants.js"></script>
+  <script src="../../libs/js/eventEmitter.js"></script>
+  <script src="../../libs/js/timers.js"></script>
+  <script src="../../libs/js/utils.js"></script>
+  <script src="../../libs/js/ulanziApi.js"></script>
+  <script src="./inspector.js"></script>
+</body>
+</html>

@@ -17,6 +17,24 @@ export function validateExecutable(value) {
   return value;
 }
 
+/**
+ * Why a child process failed, in words safe for a log: never its message or output, which can hold paths.
+ * @param {any} error
+ */
+export function describeFailure(error) {
+  if (error?.killed || error?.signal) return 'timed out';
+  if (error?.code === 'ENOENT') return 'executable not found';
+  if (error?.code === 'EACCES' || error?.code === 'EPERM') return 'permission denied';
+  if (error?.code === 'ERR_CHILD_PROCESS_STDIO_MAXBUFFER') return 'output too large';
+  if (Number.isInteger(error?.code)) return `exit code ${error.code}`;
+  return 'failed';
+}
+
+/** @param {string} message @param {string} reason @param {unknown} [cause] */
+function failure(message, reason, cause) {
+  return Object.assign(new Error(message, cause === undefined ? undefined : { cause }), { reason });
+}
+
 /** @param {number | null | undefined} monitor Checked again at run time, because callers are not type-checked. */
 function monitorArgs(monitor) {
   // No -monitor means primary wallpaper according to Wallpaper Engine's documentation.
@@ -64,12 +82,13 @@ export class WallpaperEngineCli {
         (error, stdout) => {
           if (error) {
             // Do not expose user directories or full process output in Ulanzi Studio logs.
-            reject(new Error('Wallpaper Engine query failed or timed out', { cause: error }));
+            reject(failure('Wallpaper Engine query failed or timed out', describeFailure(error), error));
             return;
           }
           const output = String(stdout ?? '').trim().replace(/^"(.*)"$/, '$1').trim();
           if (!output) {
-            reject(new Error('Wallpaper Engine returned no active wallpaper'));
+            // Seen as a separate reason, because "ran fine but printed nothing" is the capture problem to tell apart.
+            reject(failure('Wallpaper Engine returned no active wallpaper', 'empty output'));
             return;
           }
           resolve(output);

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Wallpaper Engine PRO</title>
+  <link rel="stylesheet" href="../../libs/css/uspi.css">
+  <link rel="stylesheet" href="./inspector.css">
+</head>
+<body>
+  <div class="uspi-wrapper hidden">
+    <form id="property-inspector" autocomplete="off">
+      <div class="uspi-item">
+        <label class="uspi-item-label" for="executablePath">Wallpaper Engine executable</label>
+        <input class="uspi-item-value" id="executablePath" name="executablePath" type="text" maxlength="260" spellcheck="false" placeholder="C:\...\wallpaper64.exe">
+      </div>
+      <div class="uspi-item field-note">
+        <div class="uspi-item-label empty"></div>
+        <div class="field-note-body">
+          <p class="tip info" id="status" role="status">Enter the full path to wallpaper64.exe, then press Enter.</p>
+          <p class="hint">Wallpaper Engine must be running. The key shows the wallpaper of the primary monitor.</p>
+        </div>
+      </div>
+    </form>
+    <p class="version" id="version"></p>
+  </div>
+
+  <script src="../../libs/js/constants.js"></script>
+  <script src="../../libs/js/eventEmitter.js"></script>
+  <script src="../../libs/js/timers.js"></script>
+  <script src="../../libs/js/utils.js"></script>
+  <script src="../../libs/js/ulanziApi.js"></script>
+  <script src="./inspector.js"></script>
+</body>
+</html>

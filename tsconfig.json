@@ -1,0 +1,25 @@
+{
+  // Checks the plugin's own modules. The plugin runs as plain JavaScript on Studio's Node, with no build step, so this never emits anything.
+  // The vendored SDK is left out on purpose: it is pinned byte for byte and is not ours to fix.
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["es2023"],
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true
+  },
+  "files": [
+    "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/settings.js",
+    "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/wallpaper-engine-cli.js",
+    "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/controller.js"
+  ]
+}

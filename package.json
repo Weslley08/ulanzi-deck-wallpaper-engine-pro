@@ -1,0 +1,17 @@
+{
+  "name": "ulanzi-deck-wallpaper-engine-pro",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ulanzi D200 Wallpaper Engine PRO development and tests",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20.12.2 <21"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "check:structure": "node scripts/check-structure.mjs",
+    "check": "npm run check:structure && npm test",
+    "audit": "npm audit --audit-level=high"
+  }
+}

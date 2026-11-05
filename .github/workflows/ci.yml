@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'feat/**', 'fix/**', 'docs/**', 'test/**', 'ci/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Node 20 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.12.2'
+          cache: npm
+      - name: Install locked development dependencies
+        run: npm ci --ignore-scripts
+      - name: Structure and adapter tests
+        run: npm run check
+      - name: Known vulnerability audit
+        run: npm run audit
+
+  secrets:
+    name: Scan committed secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

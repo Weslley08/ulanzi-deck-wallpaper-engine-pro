@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+benchmark-data/
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+*.log

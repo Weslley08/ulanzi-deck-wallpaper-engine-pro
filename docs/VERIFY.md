@@ -1,10 +1,10 @@
-# Real-device verification — not yet completed
+# Real-device verification
 
-Phase 0: this repository does **not** contain an installable plugin ZIP yet.
+The automated checks use a fake Ulanzi Studio and a fake Wallpaper Engine. They cannot see the deck or the real program, so this list is run by hand, with the zip from the release draft.
 
-When Phase 1 is complete, verify on **Windows + Wallpaper Engine running + Ulanzi Studio + D200**:
+Verify on **Windows + Wallpaper Engine running + Ulanzi Studio + D200**:
 
-- [ ] Install a reviewed ZIP with all pinned SDK files/dependencies.
+- [ ] Install the reviewed zip, with all pinned SDK files and dependencies.
 - [ ] Studio displays the action and settings; no unexpected prompts or console leaks.
 - [ ] Primary wallpaper is shown after a single key invocation.
 - [ ] Changing wallpaper in the Wallpaper Engine reflects after the next supported refresh/action.
@@ -15,3 +15,5 @@ When Phase 1 is complete, verify on **Windows + Wallpaper Engine running + Ulanz
 - [ ] CPU, RSS memory and redraw frequency were measured during idle and activation.
 - [ ] RTK/CMR performance notes contain factual measurements, not inferred savings.
 - [ ] No leak of wallpaper file path, personal folder names or tokens in logs.
+- [ ] The format `getWallpaper` really prints (a `project.json` path, a folder or a file) is written down, and the name on the key is the one expected.
+- [ ] The minimum Ulanzi Studio version in `manifest.json` (`Software.MinVersion`) is confirmed for SDK V3.1.

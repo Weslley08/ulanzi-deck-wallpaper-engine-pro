@@ -9,9 +9,23 @@
     "node": ">=20.12.2 <21"
   },
   "scripts": {
-    "test": "node --test",
+    "setup": "npm ci && npm ci --prefix com.ulanzi.wallpaperenginepro.ulanziPlugin",
+    "test": "node scripts/run-tests.mjs",
+    "test:coverage": "node scripts/run-tests.mjs --coverage",
+    "typecheck": "tsc --project tsconfig.json",
+    "package": "node scripts/package.mjs",
+    "verify:package": "node scripts/verify-package.mjs",
+    "check:secrets": "node scripts/scan-secrets.mjs",
+    "check:sdk": "node scripts/check-sdk.mjs",
     "check:structure": "node scripts/check-structure.mjs",
-    "check": "npm run check:structure && npm test",
-    "audit": "npm audit --audit-level=high"
+    "check": "npm run check:structure && npm run check:sdk && npm run typecheck && npm test",
+    "measure": "node scripts/measure.mjs",
+    "bump": "node scripts/bump-version.mjs",
+    "audit": "npm audit && npm audit --prefix com.ulanzi.wallpaperenginepro.ulanziPlugin"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.14",
+    "typescript": "5.9.3",
+    "ws": "8.22.1"
   }
 }

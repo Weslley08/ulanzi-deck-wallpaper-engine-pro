@@ -1,0 +1,25 @@
+name: Feature request
+description: A new action, a setting or an idea for the key.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do that you cannot do today?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How do you imagine it working?
+      description: Only documented Wallpaper Engine command line features can be used. See docs/API-SOURCES.md.
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device you would use it on
+      options:
+        - D200
+        - D200H
+        - D200X
+        - Dial
+        - Any

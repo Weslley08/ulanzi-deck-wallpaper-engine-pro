@@ -1,0 +1,14 @@
+/* Only what the shared uspi.css does not already provide. */
+.hint {
+  margin: 6px 0 0;
+  opacity: 0.8;
+}
+
+.tip.error {
+  color: #d9534f;
+}
+
+.version {
+  opacity: 0.6;
+  font-size: 11px;
+}

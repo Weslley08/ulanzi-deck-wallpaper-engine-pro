@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem
+    url: https://github.com/Weslley08/ulanzi-deck-wallpaper-engine-pro/security/advisories/new
+    about: Report vulnerabilities privately, not in a public issue.
+  - name: Wallpaper Engine problems
+    url: https://help.wallpaperengine.io/
+    about: For Wallpaper Engine itself, its own help pages and support are the place.

@@ -8,7 +8,8 @@ const EXECUTABLES = new Set(['wallpaper64.exe', 'wallpaper32.exe']);
 const DEFAULT_TIMEOUT_MS = 5_000;
 const MAX_STDOUT_BYTES = 64 * 1024;
 
-function validateExecutable(value) {
+/** @param {unknown} value */
+export function validateExecutable(value) {
   if (typeof value !== 'string' || !win32.isAbsolute(value) ||
       !EXECUTABLES.has(win32.basename(value).toLowerCase())) {
     throw new TypeError('Wallpaper Engine requires a trusted absolute path to wallpaper64.exe or wallpaper32.exe');
@@ -16,6 +17,7 @@ function validateExecutable(value) {
   return value;
 }
 
+/** @param {number | null | undefined} monitor Checked again at run time, because callers are not type-checked. */
 function monitorArgs(monitor) {
   // No -monitor means primary wallpaper according to Wallpaper Engine's documentation.
   // Index 0 is NOT assumed to be the user's primary screen.
@@ -27,6 +29,9 @@ function monitorArgs(monitor) {
 }
 
 export class WallpaperEngineCli {
+  /**
+   * @param {{ executablePath?: unknown, execFileImpl?: typeof execFile, platform?: NodeJS.Platform, timeoutMs?: number }} [options]
+   */
   constructor({
     executablePath,
     execFileImpl = execFile,
@@ -45,6 +50,10 @@ export class WallpaperEngineCli {
     this.timeoutMs = timeoutMs;
   }
 
+  /**
+   * @param {{ monitor?: number | null }} [options] A monitor index only when the user chose one: leave it out for the primary wallpaper.
+   * @returns {Promise<string>}
+   */
   async getCurrentWallpaper({ monitor } = {}) {
     const args = ['-control', 'getWallpaper', ...monitorArgs(monitor)];
     return new Promise((resolve, reject) => {

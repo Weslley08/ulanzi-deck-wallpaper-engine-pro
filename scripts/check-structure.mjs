@@ -15,5 +15,12 @@ assert.equal(pkg.private, true);
 assert.equal(pkg.license, 'Apache-2.0');
 assert.equal(pkg.engines.node, '>=20.12.2 <21');
 const pluginRoot = 'com.ulanzi.wallpaperenginepro.ulanziPlugin';
-assert.ok(existsSync(join(pluginRoot, 'plugin', 'wallpaper-engine-cli.js')));
+for (const file of [
+  'manifest.json', 'package.json', 'plugin/app.js', 'plugin/controller.js', 'plugin/host.js',
+  'plugin/settings.js', 'plugin/wallpaper-engine-cli.js', 'plugin/ulanzi-api/index.js', 'libs/js/ulanziApi.js',
+  'property-inspector/current-wallpaper/inspector.html',
+]) {
+  assert.ok(existsSync(join(pluginRoot, file)), `Missing ${file}`);
+}
+assert.ok(existsSync('sdk-lock.json'), 'Missing sdk-lock.json');
 console.log('Phase 0 scaffold and documented API adapter: OK');

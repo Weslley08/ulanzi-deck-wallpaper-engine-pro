@@ -20,21 +20,37 @@ A Windows-first plugin for **Ulanzi Studio / Ulanzi D200**, integrating official
 
 Wallpaper Engine documents the executable `wallpaper64.exe` / `wallpaper32.exe` and the command `-control getWallpaper`, which writes the primary wallpaper path to stdout. An optional `-monitor N` targets a numeric index. The current adapter implements only **this query**.
 
-Ulanzi Studio's SDK and plugin layout will follow the project's existing reference, [Clima PRO](https://github.com/Weslley08/ulanzi-deck-clima-pro). Source SDK files will be pinned before being bundled, **not hand-edited or replaced by undocumented methods**.
+The plugin layout and the build and release pipeline follow [Clima PRO](https://github.com/Weslley08/ulanzi-deck-clima-pro). The official Ulanzi SDK files are vendored unmodified and pinned by commit and checksum in `sdk-lock.json`, and `npm run check:sdk` verifies them. **No undocumented methods are used.**
 
-### Get started (development)
+The key shows the **name** of the wallpaper on the primary monitor, not a preview image: the command line returns a path, and nothing documents a thumbnail.
 
-Install Node.js 20.12.2, then:
+## Setup
+
+Wallpaper Engine has to be installed and running. Then, in Ulanzi Studio:
+
+1. Put the **Current Wallpaper** action on a key.
+2. In the key's settings, enter the full path to `wallpaper64.exe` (or `wallpaper32.exe`) in your Wallpaper Engine folder, and press Enter.
+3. Press the key to refresh. If Wallpaper Engine is not running, the key says so.
+
+The plugin only runs `-control getWallpaper`, with no shell, and never writes your folders to its logs.
+
+## Development
+
+Install Node.js 20.12.2 (`.nvmrc`), then:
 
 ```powershell
 git clone https://github.com/Weslley08/ulanzi-deck-wallpaper-engine-pro.git
 cd ulanzi-deck-wallpaper-engine-pro
-npm ci
-npm test
-npm run check:structure
+npm run setup          # root and plugin dependencies, from the lockfiles, without install scripts
+npm run check          # structure, SDK pin, type check and tests
+npm run test:coverage  # tests, and a floor for lines, branches and functions
+npm run package        # dist/<plugin>.zip
+npm run verify:package # checks the zip and starts it from nothing but its own files
+npm run check:secrets
+npm run measure
 ```
 
-The adapter is a **library**, not an installable command or a running Ulanzi action. It requires an explicit, trusted absolute Windows path to the Wallpaper Engine executable and never executes through a shell.
+Contributions go through the branch flow in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Development roadmap
 

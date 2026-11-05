@@ -13,7 +13,7 @@ import { readZip } from './lib/zip.mjs';
 
 const MAX_SIZE = 50 * 1024 * 1024;
 const FORBIDDEN = /(^|\/)(\.env[^/]*|\.git[^/]*|\.npmrc|\.claude|CLAUDE\.md|package-lock\.json|[^/]+\.map|[^/]+\.log|test|scripts|docs|store)(\/|$)/;
-const CONFIGURED_KEY = String.raw`C:\Program Files (x86)\Steam\steamapps\common\wallpaper_engine\wallpaper64.exe`;
+const OLD_SAVED_PATH = String.raw`C:\not-used\wallpaper64.exe`;
 
 const problems = [];
 const check = (ok, message) => {
@@ -104,7 +104,7 @@ if (secrets.length) {
 
 /**
  * The test nobody else runs: does the plugin start from nothing but the zip's own files?
- * Two keys are added, one with a Wallpaper Engine path and one without, and each must answer with its own title.
+ * Two keys are added with no configuration, and both must find the (fake) running Wallpaper Engine by themselves.
  */
 async function smokeTest() {
   const dir = mkdtempSync(join(tmpdir(), 'wallpaper-engine-pro-zip-'));
@@ -125,11 +125,12 @@ async function smokeTest() {
         socket.on('message', (raw) => {
           const message = JSON.parse(raw);
           if (message.cmd === 'connected') {
-            socket.send(JSON.stringify({ cmd: 'add', uuid: action, key: '0_0', actionid: 'smoke-1', param: { executablePath: CONFIGURED_KEY } }));
+            // The first key carries a path saved by an older build, which must be ignored.
+            socket.send(JSON.stringify({ cmd: 'add', uuid: action, key: '0_0', actionid: 'smoke-1', param: { executablePath: OLD_SAVED_PATH } }));
             socket.send(JSON.stringify({ cmd: 'add', uuid: action, key: '1_0', actionid: 'smoke-2', param: {} }));
           }
           if (message.cmd === 'setTitle') titles.add(`${message.param?.key}:${message.param?.text}`);
-          if (titles.has('0_0:Sunset') && titles.has('1_0:Set Wallpaper Engine path')) {
+          if (titles.has('0_0:Sunset') && titles.has('1_0:Sunset')) {
             clearTimeout(limit);
             resolve(undefined);
           }
@@ -156,4 +157,4 @@ if (problems.length) {
   for (const problem of problems) console.error(`FAIL ${problem}`);
   process.exit(1);
 }
-console.log(`OK ${zip.size} files, ${(zipBytes.length / 1024 / 1024).toFixed(2)} MB, version ${manifest.Version}; the unpacked plugin started and answered on both keys.`);
+console.log(`OK ${zip.size} files, ${(zipBytes.length / 1024 / 1024).toFixed(2)} MB, version ${manifest.Version}; the unpacked plugin started, found the running program by itself and answered on both keys.`);

@@ -14,7 +14,6 @@ const IDLE_SECONDS = Number(process.argv[2] ?? 30);
 const PRESSES = 60;
 const manifest = JSON.parse(readFileSync(join(pluginDir, 'manifest.json'), 'utf8'));
 const preload = (file) => pathToFileURL(join(root, 'test', 'support', file)).href;
-const EXE = String.raw`C:\Program Files (x86)\Steam\steamapps\common\wallpaper_engine\wallpaper64.exe`;
 
 const server = new WebSocketServer({ host: '127.0.0.1', port: 0 });
 await once(server, 'listening');
@@ -57,7 +56,7 @@ async function until(check, label, ms = 10_000) {
 
 const atStart = await metrics();
 const addedAt = performance.now();
-send({ cmd: 'add', ...key, param: { executablePath: EXE } });
+send({ cmd: 'add', ...key, param: {} });
 await until(() => titles >= 1, 'first title');
 const firstDraw = performance.now() - addedAt;
 await sleep(500);

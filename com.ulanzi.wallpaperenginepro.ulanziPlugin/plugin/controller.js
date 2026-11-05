@@ -1,15 +1,16 @@
 // Wiring between Ulanzi Studio events and the single Current Wallpaper key.
-// It only queries Wallpaper Engine when a key is added, its settings change, it is pressed or it becomes active.
-// There is no timer while no key is shown.
-import { checkExecutablePath, normalizeSettings } from './settings.js';
+// Wallpaper Engine is found by itself on every query: there is no path to configure, save or type.
+// It only looks when a key is added, pressed, shown again or retried from its settings. There is no timer while no key is shown.
 import { WallpaperEngineCli } from './wallpaper-engine-cli.js';
+import { WallpaperEngineDiscovery } from './wallpaper-engine-discovery.js';
 
 export const PLUGIN_UUID = 'com.ulanzi.wallpaperenginepro.ulanziPlugin';
 export const ACTION_UUID = `${PLUGIN_UUID}.current-wallpaper`;
 
 export const TITLES = Object.freeze({
-  unconfigured: 'Set Wallpaper Engine path',
-  unavailable: 'Wallpaper Engine unavailable',
+  notRunning: 'Wallpaper Engine não está em execução',
+  undetected: 'Não foi possível detectar o Wallpaper Engine',
+  queryFailed: 'Não foi possível ler o wallpaper',
 });
 
 const MAX_LABEL = 24;
@@ -33,10 +34,10 @@ const WALLPAPER_EXTENSION = /\.(pkg|mp4|webm|gif|html|png|jpe?g|json)$/i;
  * @property {Listen} onClear
  * @property {() => void} reconnect
  * @property {(context: string, text: string) => void} setTitle
- * @property {(settings: object, context: string) => void} setSettings
  * @property {(payload: object, context: string) => void} sendToPropertyInspector
- * @typedef {{ executablePath: string, busy: boolean }} KeyState
+ * @typedef {{ busy: boolean, title: string }} KeyState
  * @typedef {{ getCurrentWallpaper(): Promise<string> }} WallpaperSource
+ * @typedef {{ discover(): Promise<import('./wallpaper-engine-discovery.js').Discovery> }} Finder
  */
 
 /**
@@ -52,8 +53,12 @@ export function wallpaperLabel(wallpaperPath) {
   return name.length > MAX_LABEL ? `${name.slice(0, MAX_LABEL - 1)}…` : name;
 }
 
+/** @param {unknown} error */
+const reasonOf = (error) => (typeof (/** @type {any} */ (error))?.reason === 'string' ? /** @type {any} */ (error).reason : 'failed');
+
 export class CurrentWallpaperController {
   /** @type {Host} */ #host;
+  /** @type {Finder} */ #discovery;
   /** @type {(executablePath: string) => WallpaperSource} */ #createCli;
   /** @type {(message: string) => void} */ #log;
   /** @type {() => void} */ #onGiveUp;
@@ -66,6 +71,7 @@ export class CurrentWallpaperController {
   /**
    * @param {object} options
    * @param {Host} options.host
+   * @param {Finder} [options.discovery] Finds the running Wallpaper Engine.
    * @param {(executablePath: string) => WallpaperSource} [options.createCli]
    * @param {(message: string) => void} [options.log]
    * @param {() => void} [options.onGiveUp] Called when Studio stays unreachable after every attempt.
@@ -74,6 +80,7 @@ export class CurrentWallpaperController {
    */
   constructor({
     host,
+    discovery = new WallpaperEngineDiscovery(),
     createCli = (executablePath) => new WallpaperEngineCli({ executablePath }),
     log = () => {},
     onGiveUp = () => {},
@@ -81,6 +88,7 @@ export class CurrentWallpaperController {
     maxAttempts = 10,
   }) {
     this.#host = host;
+    this.#discovery = discovery;
     this.#createCli = createCli;
     this.#log = log;
     this.#onGiveUp = onGiveUp;
@@ -95,9 +103,10 @@ export class CurrentWallpaperController {
     host.onClose(() => this.#scheduleReconnect());
     // Without a listener the EventEmitter throws. A close event always follows an error.
     host.onError(() => {});
-    host.onAdd((jsn) => this.#onSettings(jsn));
-    host.onParamFromApp((jsn) => this.#onSettings(jsn));
-    host.onParamFromPlugin((jsn) => this.#onSettings(jsn));
+    // Settings carry nothing this plugin uses: an old saved path, if any, is ignored.
+    host.onAdd((jsn) => this.#register(jsn));
+    host.onParamFromApp((jsn) => this.#register(jsn));
+    host.onParamFromPlugin((jsn) => this.#register(jsn));
     host.onRun((jsn) => this.#onPress(jsn));
     host.onSetActive((jsn) => {
       if (String(jsn.active) === 'true' && this.#keys.has(jsn.context)) this.#refresh(jsn.context);
@@ -138,53 +147,53 @@ export class CurrentWallpaperController {
     }, wait);
   }
 
-  /** @param {HostEvent} jsn */
-  #onSettings(jsn) {
-    if (jsn.uuid !== ACTION_UUID) return;
-    const { executablePath } = normalizeSettings(jsn.param);
-    this.#apply(jsn.context, executablePath);
+  /** A key is queried once when it first appears. A settings echo for a known key does nothing. @param {HostEvent} jsn */
+  #register(jsn) {
+    if (jsn.uuid !== ACTION_UUID || this.#keys.has(jsn.context)) return;
+    this.#keys.set(jsn.context, { busy: false, title: '' });
+    this.#refresh(jsn.context);
   }
 
   /** @param {HostEvent} jsn */
   #onPress(jsn) {
     if (jsn.uuid !== ACTION_UUID) return;
     if (!this.#keys.has(jsn.context)) {
-      this.#onSettings(jsn);
+      this.#register(jsn);
       return;
     }
     this.#refresh(jsn.context);
   }
 
-  /**
-   * Stores the path and queries only when the key is new or its path changed, so a settings echo never queries twice.
-   * @param {string} context
-   * @param {string} executablePath
-   */
-  #apply(context, executablePath) {
-    const known = this.#keys.get(context);
-    if (known && known.executablePath === executablePath) return;
-    this.#keys.set(context, { executablePath, busy: false });
-    this.#refresh(context);
-  }
-
   /** @param {string} context */
   async #refresh(context) {
     const entry = this.#keys.get(context);
-    if (!entry) return;
-    if (!entry.executablePath) {
-      this.#host.setTitle(context, TITLES.unconfigured);
-      return;
-    }
     // A press during a running query is ignored, so presses cannot stack processes.
-    if (entry.busy) return;
+    if (!entry || entry.busy) return;
     entry.busy = true;
     try {
-      const wallpaper = await this.#createCli(entry.executablePath).getCurrentWallpaper();
-      this.#draw(context, entry, wallpaperLabel(wallpaper));
+      // Looked up again each time: the running program is confirmed before its command line is used,
+      // so a stopped Wallpaper Engine is never started, and a restart from another folder is followed.
+      const found = await this.#discovery.discover();
+      if (found.status === 'not-running') {
+        this.#draw(context, entry, TITLES.notRunning);
+        return;
+      }
+      if (found.status !== 'found') {
+        this.#log(`Wallpaper Engine detection inconclusive: ${found.reason}`);
+        this.#draw(context, entry, TITLES.undetected);
+        return;
+      }
+      try {
+        const wallpaper = await this.#createCli(found.executablePath).getCurrentWallpaper();
+        this.#draw(context, entry, wallpaperLabel(wallpaper));
+      } catch (error) {
+        // Only the reason is logged: the adapter's message and output can contain paths.
+        this.#log(`Wallpaper Engine query failed: ${reasonOf(error)}`);
+        this.#draw(context, entry, TITLES.queryFailed);
+      }
     } catch {
-      // The adapter's message stays out of the log: it can contain paths.
-      this.#log('Wallpaper Engine query failed');
-      this.#draw(context, entry, TITLES.unavailable);
+      this.#log('Wallpaper Engine detection inconclusive: failed');
+      this.#draw(context, entry, TITLES.undetected);
     } finally {
       entry.busy = false;
     }
@@ -196,35 +205,28 @@ export class CurrentWallpaperController {
    * @param {string} text
    */
   #draw(context, entry, text) {
-    // Skip the drawing when the key was removed or its path changed during the query.
+    // Skip the drawing when the key was removed during the query.
     if (this.#keys.get(context) !== entry) return;
+    entry.title = text;
     this.#host.setTitle(context, text);
   }
 
-  /** @param {HostEvent} jsn */
-  #onInspectorMessage(jsn) {
+  /** @param {string} context */
+  #reportStatus(context) {
+    const title = this.#keys.get(context)?.title;
+    this.#host.sendToPropertyInspector({ type: 'status', message: title || 'Detectando o Wallpaper Engine…' }, context);
+  }
+
+  /** The inspector only shows the state and offers to look again. It never sends a path. @param {HostEvent} jsn */
+  async #onInspectorMessage(jsn) {
     const context = jsn.context;
-    const message = jsn.payload ?? {};
-    if (message.type === 'hello') {
-      const entry = this.#keys.get(context);
-      this.#host.sendToPropertyInspector(
-        { type: 'settings', executablePath: entry?.executablePath ?? '' },
-        context,
-      );
-      return;
-    }
-    if (message.type === 'save') {
-      const checked = checkExecutablePath(message.executablePath);
-      if (!checked.ok) {
-        this.#host.sendToPropertyInspector({ type: 'status', ok: false, message: checked.message }, context);
-        return;
-      }
-      this.#host.setSettings({ executablePath: checked.executablePath }, context);
-      this.#apply(context, checked.executablePath);
-      this.#host.sendToPropertyInspector(
-        { type: 'status', ok: true, message: 'Saved. Press the key to refresh.' },
-        context,
-      );
+    const type = jsn.payload?.type;
+    if (type === 'hello') {
+      this.#reportStatus(context);
+    } else if (type === 'retry') {
+      if (!this.#keys.has(context)) this.#keys.set(context, { busy: false, title: '' });
+      await this.#refresh(context);
+      this.#reportStatus(context);
     }
   }
 }

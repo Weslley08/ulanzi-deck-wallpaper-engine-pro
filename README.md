@@ -26,13 +26,15 @@ The key shows the **name** of the wallpaper on the primary monitor, not a previe
 
 ## Setup
 
-Wallpaper Engine has to be installed and running. Then, in Ulanzi Studio:
+There is nothing to configure. Put the **Current Wallpaper** action on a key while Wallpaper Engine is running: the plugin finds it by itself, in any Steam library or drive, and shows the wallpaper of the primary monitor. Press the key to refresh.
 
-1. Put the **Current Wallpaper** action on a key.
-2. In the key's settings, enter the full path to `wallpaper64.exe` (or `wallpaper32.exe`) in your Wallpaper Engine folder, and press Enter.
-3. Press the key to refresh. If Wallpaper Engine is not running, the key says so.
+| The key says | Meaning | What to do |
+|---|---|---|
+| `Wallpaper Engine não está em execução` | No `wallpaper64.exe` or `wallpaper32.exe` is running | Start Wallpaper Engine, then press the key |
+| `Não foi possível detectar o Wallpaper Engine` | It may be running, but its location could not be confirmed: for example two installations at once, or it runs as administrator | Press the key, or **Detectar novamente** in the key's settings |
+| `Não foi possível ler o wallpaper` | It was found, but did not answer `getWallpaper` | Press the key again |
 
-The plugin only runs `-control getWallpaper`, with no shell, and never writes your folders to its logs.
+How it finds the program: Windows lists running processes with their executable path in the documented `Win32_Process` class, which the plugin reads through the system's own PowerShell (`Get-CimInstance`), with a fixed command and no shell. It looks only when the key is added, pressed or shown again, never in the background, and it never starts Wallpaper Engine. It then runs only `-control getWallpaper`, and never writes your folders to its logs.
 
 ## Development
 

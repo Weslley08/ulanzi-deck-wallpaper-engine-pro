@@ -8,8 +8,14 @@ Verify on **Windows + Wallpaper Engine running + Ulanzi Studio + D200**:
 - [ ] Studio displays the action and settings; no unexpected prompts or console leaks.
 - [ ] Primary wallpaper is shown after a single key invocation.
 - [ ] Changing wallpaper in the Wallpaper Engine reflects after the next supported refresh/action.
-- [ ] With Wallpaper Engine stopped, key shows a safe unavailable state and no crash.
-- [ ] If executable path is missing/wrong, the inspector offers a recoverable configuration state.
+- [ ] With no path ever entered, the key finds the running Wallpaper Engine by itself.
+- [ ] With Wallpaper Engine stopped, the key shows `Wallpaper Engine não está em execução`, does not start it, and recovers on the next press after starting it.
+- [ ] Installed in a Steam library on a drive other than C:, it is still found.
+- [ ] Restarted from another folder or drive, the next press follows it.
+- [ ] Run as administrator (Studio not elevated), the key shows `Não foi possível detectar o Wallpaper Engine` and **Detectar novamente** recovers once it runs normally.
+- [ ] The inspector has no path field, only the state and **Detectar novamente**.
+- [ ] The long Portuguese titles fit or wrap legibly on the D200 key.
+- [ ] If the key shows `Não foi possível ler o wallpaper`, the Studio log line `Wallpaper Engine query failed: <reason>` is recorded (timed out, exit code N, empty output...).
 - [ ] No duplicate key execution due to `keydown` and `run`.
 - [ ] On Studio restart, the connection, settings and key state recover.
 - [ ] CPU, RSS memory and redraw frequency were measured during idle and activation.

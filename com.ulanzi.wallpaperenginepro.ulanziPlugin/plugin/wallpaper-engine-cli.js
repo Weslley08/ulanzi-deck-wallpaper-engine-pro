@@ -5,6 +5,9 @@ import { execFile } from 'node:child_process';
 import { win32 } from 'node:path';
 
 const EXECUTABLES = new Set(['wallpaper64.exe', 'wallpaper32.exe']);
+// The documented commands a key may send. getWallpaper has its own method, because its output matters.
+const CONTROL_COMMANDS = new Set(['nextWallpaper', 'pause', 'play', 'mute', 'unmute', 'openPlaylist', 'openProfile']);
+const VALUE_FLAGS = new Set(['-playlist', '-profile', '-monitor']);
 const DEFAULT_TIMEOUT_MS = 5_000;
 const MAX_STDOUT_BYTES = 64 * 1024;
 
@@ -66,6 +69,28 @@ export class WallpaperEngineCli {
     }
     this.execFileImpl = execFileImpl;
     this.timeoutMs = timeoutMs;
+  }
+
+  /**
+   * Sends one documented command, such as ['-control', 'pause'] or ['-control', 'openPlaylist', '-playlist', 'Chill'].
+   * Anything outside the allowlist is refused before a process starts.
+   * @param {string[]} args
+   * @returns {Promise<void>}
+   */
+  async sendCommand(args) {
+    const [flag, control, ...rest] = Array.isArray(args) ? args : [];
+    const pairs = rest.length % 2 === 0 && rest.every((value, i) => typeof value === 'string' && (i % 2 === 1 || VALUE_FLAGS.has(value)));
+    if (flag !== '-control' || !CONTROL_COMMANDS.has(control) || !pairs) {
+      throw failure('Refused an undocumented Wallpaper Engine command', 'refused');
+    }
+    return new Promise((resolve, reject) => {
+      this.execFileImpl(
+        this.executablePath,
+        args,
+        { shell: false, windowsHide: true, timeout: this.timeoutMs, maxBuffer: MAX_STDOUT_BYTES },
+        (error) => (error ? reject(failure('Wallpaper Engine command failed or timed out', describeFailure(error), error)) : resolve()),
+      );
+    });
   }
 
   /**

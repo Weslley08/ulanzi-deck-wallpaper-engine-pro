@@ -9,15 +9,44 @@ const manifest = JSON.parse(readFileSync(join(pluginRoot, 'manifest.json'), 'utf
 test('plugin UUID matches the folder and the action UUID extends it', () => {
   assert.equal(pluginRoot, manifest.UUID);
   assert.equal(manifest.Type, 'JavaScript');
-  assert.equal(manifest.Actions.length, 1, 'Phase 1 ships a single action');
-  assert.equal(manifest.Actions[0].UUID, `${manifest.UUID}.current-wallpaper`);
+  assert.deepEqual(manifest.Actions.map((action) => action.UUID), [
+    `${manifest.UUID}.current-wallpaper`,
+    `${manifest.UUID}.command`,
+  ]);
 });
 
-test('the action is a keypad action that does not add states on its own', () => {
-  const [action] = manifest.Actions;
-  assert.deepEqual(action.Controllers, ['Keypad']);
-  assert.equal(action.DisableAutomaticStates, true);
-  assert.equal(action.SupportedInMultiActions, false);
+test('every action is a keypad action that does not add states on its own', () => {
+  for (const action of manifest.Actions) {
+    assert.deepEqual(action.Controllers, ['Keypad']);
+    assert.equal(action.DisableAutomaticStates, true);
+    assert.equal(action.SupportedInMultiActions, false);
+  }
+});
+
+test('no inspector asks for an executable path, a file or a folder', () => {
+  for (const action of manifest.Actions) {
+    const page = join(pluginRoot, action.PropertyInspectorPath);
+    const html = readFileSync(page, 'utf8');
+    const script = readFileSync(join(dirname(page), 'inspector.js'), 'utf8');
+    assert.doesNotMatch(html, /executablePath|type="file"|wallpaper64/i, page);
+    assert.doesNotMatch(script, /executablePath|selectFileDialog|selectFolderDialog/, page);
+  }
+});
+
+test('every command offered by the command inspector is one the plugin knows', async () => {
+  const { COMMANDS } = await import('../com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/commands.js');
+  const html = readFileSync(join(pluginRoot, manifest.Actions[1].PropertyInspectorPath), 'utf8');
+  const offered = [...html.matchAll(/<option value="([a-z]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(offered.sort(), Object.keys(COMMANDS).sort());
+});
+
+test('every command has its own key icon of the D200 size', async () => {
+  const { COMMANDS } = await import('../com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/commands.js');
+  for (const { icon } of Object.values(COMMANDS)) {
+    const png = readFileSync(join(pluginRoot, 'resources', 'commands', `${icon}.png`));
+    assert.equal(png.toString('latin1', 1, 4), 'PNG');
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [196, 196], icon);
+  }
 });
 
 test('Windows is the only declared platform, matching the Wallpaper Engine CLI', () => {
@@ -25,14 +54,11 @@ test('Windows is the only declared platform, matching the Wallpaper Engine CLI',
 });
 
 test('every file the manifest references exists', () => {
-  const [action] = manifest.Actions;
   const references = [
     manifest.Icon,
     manifest.CategoryIcon,
     manifest.CodePath,
-    action.Icon,
-    action.PropertyInspectorPath,
-    ...action.States.map((state) => state.Image),
+    ...manifest.Actions.flatMap((action) => [action.Icon, action.PropertyInspectorPath, ...action.States.map((state) => state.Image)]),
   ];
   for (const reference of references) {
     assert.ok(existsSync(join(pluginRoot, reference)), `missing ${reference}`);
@@ -64,6 +90,18 @@ test('auto-discovery inspector is visible and never asks for a manual executable
   assert.doesNotMatch(script, /getElementById\(['"]executablePath['"]\)|querySelector\(['"]#executablePath['"]\)/);
 });
 
+
+test('the inspector is one vertical column that wraps, for Studio\'s narrow panel', () => {
+  const page = join(pluginRoot, manifest.Actions[0].PropertyInspectorPath);
+  const html = readFileSync(page, 'utf8');
+  const css = readFileSync(join(dirname(page), 'inspector.css'), 'utf8');
+  // The two-column uspi-item row is what squeezed the text next to its label.
+  assert.doesNotMatch(html, /uspi-item-label/);
+  assert.match(html, /class="panel"/);
+  assert.match(css, /\.panel\s*\{[^}]*flex-direction:\s*column/);
+  assert.match(css, /overflow-wrap:\s*anywhere/);
+  assert.match(html, /aria-live="polite"/);
+});
 
 test('the plugin runtime pins ws to an exact version', () => {
   const runtime = JSON.parse(readFileSync(join(pluginRoot, 'package.json'), 'utf8'));

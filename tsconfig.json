@@ -19,6 +19,9 @@
   },
   "files": [
     "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/wallpaper-engine-discovery.js",
+    "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/log-limiter.js",
+    "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/commands.js",
+    "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/icons.js",
     "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/wallpaper-engine-cli.js",
     "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/controller.js"
   ]

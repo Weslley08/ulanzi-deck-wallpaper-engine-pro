@@ -14,7 +14,19 @@ Verify on **Windows + Wallpaper Engine running + Ulanzi Studio + D200**:
 - [ ] Restarted from another folder or drive, the next press follows it.
 - [ ] Run as administrator (Studio not elevated), the key shows `Não foi possível detectar o Wallpaper Engine` and **Detectar novamente** recovers once it runs normally.
 - [ ] The inspector has no path field, only the state and **Detectar novamente**.
-- [ ] The long Portuguese titles fit or wrap legibly on the D200 key.
+- [ ] The short titles (`WE fechado`, `WE não detectado`, `WE ativo`, `WE sem resposta`) are legible on the D200 key, on two lines.
+- [ ] The settings panel shows one column, with no overlapping text, at Studio's panel width; **Detectar novamente** shows `Detectando…` while it works.
+- [ ] With `getWallpaper` printing nothing, the key shows `WE ativo`, the Studio log has one `query failed: empty output` line (not one per press), and command keys still work.
+
+Wallpaper Command keys, with six on the D200:
+
+- [ ] Each of the six keys shows its own icon and label, and keeps its action after Studio restarts.
+- [ ] `Próximo wallpaper` with no monitor changes every monitor; with a monitor number, only that one (write down which index is which screen).
+- [ ] `Pausar`, `Reproduzir`, `Mutar` and `Desmutar` do what they say, and write down whether Wallpaper Engine returns a non-zero exit code on success (the key would flash an alert).
+- [ ] `Abrir playlist` and `Abrir perfil` open an existing one by its exact name; a key without a name flashes an alert and runs nothing.
+- [ ] After `Próximo wallpaper`, a Current Wallpaper key on the deck updates.
+- [ ] Pressing a command key many times quickly does not send the command more often than it finishes.
+- [ ] With Wallpaper Engine closed, a command key flashes an alert and does not start it.
 - [ ] If the key shows `Não foi possível ler o wallpaper`, the Studio log line `Wallpaper Engine query failed: <reason>` is recorded (timed out, exit code N, empty output...).
 - [ ] No duplicate key execution due to `keydown` and `run`.
 - [ ] On Studio restart, the connection, settings and key state recover.

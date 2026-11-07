@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Wallpaper Engine PRO</title>
+  <link rel="stylesheet" href="../../libs/css/uspi.css">
+  <link rel="stylesheet" href="./inspector.css">
+</head>
+<body>
+  <div class="uspi-wrapper">
+    <!-- Nothing to configure: the plugin finds the running Wallpaper Engine by itself.
+         One column on purpose: Studio's panel is narrow, and a label beside the text squeezed both. -->
+    <section class="panel">
+      <h2 class="panel-title">Wallpaper Engine</h2>
+      <p class="status" id="status" role="status" aria-live="polite" data-state="detecting">Detectando o Wallpaper Engine…</p>
+      <button type="button" class="retry" id="retry">Detectar novamente</button>
+      <p class="hint">O Wallpaper Engine é encontrado automaticamente enquanto está em execução. A tecla mostra o wallpaper do monitor principal.</p>
+    </section>
+  </div>
+
+  <script src="../../libs/js/constants.js"></script>
+  <script src="../../libs/js/eventEmitter.js"></script>
+  <script src="../../libs/js/timers.js"></script>
+  <script src="../../libs/js/utils.js"></script>
+  <script src="../../libs/js/ulanziApi.js"></script>
+  <script src="./inspector.js"></script>
+</body>
+</html>

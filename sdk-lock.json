@@ -1,0 +1,31 @@
+{
+  "copies": [
+    {
+      "path": "com.ulanzi.wallpaperenginepro.ulanziPlugin/plugin/ulanzi-api",
+      "repo": "https://github.com/UlanziTechnology/plugin-common-node.git",
+      "commit": "9e478b2586a4ebdadbd590fc8f80519df18a8d32",
+      "files": {
+        "index.js": "8f9c1cbae57b5b93d8b188ea62c890d00bab2f64b415f1dadee1494b0dd674fb",
+        "libs/constants.js": "88441a151737f521fa4cc54401774abeafe25b30e77631a958679e6816319fe6",
+        "libs/randomPort.js": "08ec4db7efb9e4b5d45744c576344ff14240a61b3182b13039640fd1c88b805b",
+        "libs/ulanziApi.js": "c399d287ff82beb35671fee743771b9944b61a12a891718ac88e2fe43ff76e96",
+        "libs/utils.js": "37a9ba4fc1f1346c733dfc55ced35d29325cf1a7252a4d96fcfecd9958f8b8d1",
+        "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      }
+    },
+    {
+      "path": "com.ulanzi.wallpaperenginepro.ulanziPlugin/libs",
+      "repo": "https://github.com/UlanziTechnology/plugin-common-html.git",
+      "commit": "0aeb6a26b43cd45b8a5426689ca6e59c1a36b43d",
+      "files": {
+        "css/uspi.css": "b559dd379d2b616ee75c3d96a26264145f365139a42bdadd9d7bb816e6ae736f",
+        "js/constants.js": "44ac0acdd8b0105d589c470feb5b0711f5d959c134073381e6d1a49c6f060ff4",
+        "js/eventEmitter.js": "1167eaf1c4dce87942186bd35042851a3925ba8f19932dbd42e8050f991027c5",
+        "js/timers.js": "3b6948510c2136d8e58c9337682fbcd7d02aad8d67a5befa7bd1691e897aaae2",
+        "js/ulanziApi.js": "2712f856d28ba1b839974a222f5d10feaae01f9b89d026c55c30d52034cb67d5",
+        "js/utils.js": "6f13551f6e2d771401e2ddf8763d22d692b5ecfc0dd2ddcaa4ddde5e7274691e",
+        "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      }
+    }
+  ]
+}

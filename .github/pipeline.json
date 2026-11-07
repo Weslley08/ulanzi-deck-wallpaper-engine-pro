@@ -1,0 +1,22 @@
+{
+  "name": "Wallpaper Engine PRO",
+  "pluginFolder": "com.ulanzi.wallpaperenginepro.ulanziPlugin",
+  "merging": "It cannot be taken back: from then on it is what people download.",
+  "validation": {
+    "steps": [
+      "The zip is built once, and it must start and answer on a key on Windows",
+      "`npm run measure` runs"
+    ],
+    "done": [
+      "Tests, coverage, the type check and the security checks",
+      "The zip started and answered on a key on Windows, against a fake host and a fake Wallpaper Engine"
+    ]
+  },
+  "notes": {
+    "install": "Download `{zip}`, not the **Source code** archives, which will not start, and follow the [setup steps]({blob}/README.md#setup). There is nothing to configure: while Wallpaper Engine is running, the key finds it by itself.",
+    "aboutHeading": "About Wallpaper Engine",
+    "about": "This plugin runs the command line of the Wallpaper Engine you installed and shows the name of the wallpaper on your primary monitor. It includes no wallpaper and no code from Wallpaper Engine, and it shows no preview image. This project is not affiliated with Ulanzi or Wallpaper Engine.",
+    "checks": "The automated checks passed on Windows, macOS and Linux, and found no known vulnerabilities in the dependencies and no secret patterns. These tools only find problems that are already known. This zip started on Windows against a fake host and a fake Wallpaper Engine. It has not run against the real Wallpaper Engine or a deck until the manual checklist is done.",
+    "measuredAgainst": "a fake host and a fake Wallpaper Engine"
+  }
+}

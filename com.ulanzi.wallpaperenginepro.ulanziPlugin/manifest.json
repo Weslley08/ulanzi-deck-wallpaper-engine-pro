@@ -1,0 +1,50 @@
+{
+  "Author": "Weslley08",
+  "Name": "Wallpaper Engine PRO",
+  "Description": "Shows the wallpaper playing on your primary monitor in Wallpaper Engine, on a Ulanzi key.",
+  "Detail": "Wallpaper Engine PRO reads the current wallpaper of the primary monitor from Wallpaper Engine and shows its name on a key. Press the key to refresh it. There is nothing to set up: while Wallpaper Engine is running, the plugin finds it by itself, in any Steam library or drive. If it is not running, the key says so, and pressing it looks again. This version shows the name only, not a preview image.",
+  "Icon": "resources/plugin-icon.png",
+  "Version": "0.1.0",
+  "Category": "Wallpaper Engine PRO",
+  "CategoryIcon": "resources/category.svg",
+  "Banner": ["assets/banners/banner-1.png"],
+  "UUID": "com.ulanzi.wallpaperenginepro.ulanziPlugin",
+  "Type": "JavaScript",
+  "CodePath": "plugin/app.js",
+  "Actions": [
+    {
+      "Name": "Current Wallpaper",
+      "Icon": "resources/action.svg",
+      "UUID": "com.ulanzi.wallpaperenginepro.ulanziPlugin.current-wallpaper",
+      "PropertyInspectorPath": "property-inspector/current-wallpaper/inspector.html",
+      "Tooltip": "Show the wallpaper playing on the primary monitor. Press to refresh.",
+      "state": 0,
+      "States": [
+        { "Name": "Current Wallpaper", "Image": "resources/key-default.png" }
+      ],
+      "DisableAutomaticStates": true,
+      "SupportedInMultiActions": false,
+      "Controllers": ["Keypad"],
+      "Devices": []
+    },
+    {
+      "Name": "Wallpaper Command",
+      "Icon": "resources/action.svg",
+      "UUID": "com.ulanzi.wallpaperenginepro.ulanziPlugin.command",
+      "PropertyInspectorPath": "property-inspector/command/inspector.html",
+      "Tooltip": "Run a Wallpaper Engine command: next, pause, play, mute, unmute, a playlist or a profile.",
+      "state": 0,
+      "States": [
+        { "Name": "Wallpaper Command", "Image": "resources/command-default.png" }
+      ],
+      "DisableAutomaticStates": true,
+      "SupportedInMultiActions": false,
+      "Controllers": ["Keypad"],
+      "Devices": []
+    }
+  ],
+  "OS": [
+    { "Platform": "windows", "MinimumVersion": "10" }
+  ],
+  "Software": { "MinVersion": "3.0.11" }
+}
